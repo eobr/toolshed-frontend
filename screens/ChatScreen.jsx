@@ -9,10 +9,11 @@ import {
   query,
   onSnapshot,
 } from "firebase/firestore";
+import { SafeAreaView } from "react-native";
 
-const ChatScreen = () => {
-  //   const currentUser = useUser();
+const ChatScreen = ({ route }) => {
   const [messages, setMessages] = useState([]);
+  const { group } = route.params;
 
   useLayoutEffect(() => {
     const collectionRef = collection(db, "chats");
@@ -30,7 +31,7 @@ const ChatScreen = () => {
     });
 
     return unsubscribe;
-  });
+  }, []);
 
   const onSend = useCallback((messages = []) => {
     setMessages((previousMessages) =>
@@ -46,14 +47,16 @@ const ChatScreen = () => {
   }, []);
 
   return (
-    <GiftedChat
-      messages={messages}
-      onSend={(messages) => onSend(messages)}
-      user={{
-        _id: auth?.currentUser?.email,
-        name: auth?.currentUser?.displayName,
-      }}
-    />
+    <SafeAreaView>
+      <GiftedChat
+        messages={messages}
+        onSend={(messages) => onSend(messages)}
+        user={{
+          _id: auth?.currentUser?.email,
+          name: auth?.currentUser?.displayName,
+        }}
+      />
+    </SafeAreaView>
   );
 };
 
