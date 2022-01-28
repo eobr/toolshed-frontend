@@ -35,7 +35,7 @@ const ItemScreen = ({ route, navigation }) => {
       <View style={styles.contentContainer}>
         <Image style={styles.image} source={{uri: itemImage}} />
         <Text>{item.name}</Text>
-        <Text>{item.userInfo.userFirstName}</Text>
+        <Text>{item.userInfo.userFirstname}</Text>
         <Text>{item.userInfo.userSurname}</Text>                  
         <Text>{item.description}</Text>
       </View>

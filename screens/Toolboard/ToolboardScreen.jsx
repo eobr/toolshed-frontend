@@ -28,15 +28,15 @@ const ToolboardScreen = ({ navigation }) => {
   }
     return (
       <View style={styles.container}>
-        <ScrollView>
         <Text style={styles.header}>Toolboard</Text>
         <View style={styles.contentContainer}>
+        <ScrollView>
           <Pressable style={styles.button} onPress={handlePress}>
             <Text style={styles.text}>Post a request!</Text>
           </Pressable>
           <RequestCard requests={requests} navigation={navigation} />
-          </View>
         </ScrollView>
+          </View>
     </View>
   );
 };
@@ -55,6 +55,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 2,
     elevation: 1,
+    height: "100%",
   },
   header: {
     margin: "5%",
@@ -62,6 +63,8 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: "bold",
     color: "#FFF8F0",
+    justifyContent: "center",
+    alignSelf: "center",
   },
   contentContainer: {
     width: "100%",

@@ -1,20 +1,38 @@
 import { StyleSheet, Text, View } from 'react-native';
-import React from 'react';
-import {auth} from "../../firebase.js";
+import React, {useEffect, useState} from 'react';
+import {auth, db} from "../../firebase.js";
 import SignOut from '../../components/SignOut.jsx';
+import {getDoc, doc} from "firebase/firestore";
 
 const UserScreen = ({ navigation }) => {
 
-  // console.log(auth);
+  const [user, setUser] = useState({});
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const docRef = doc(db, "users", auth.currentUser.uid)
+        const userDoc = await getDoc(docRef);
+        setUser(userDoc.data());
+      }
+      catch (err) {
+        console.log(err);
+      }
+    })()
+  }, []);
+  
+  if (user.data)
+  {
+    console.log(user);
+  }
 
   return (
       <View style={styles.container}>
       <Text style={styles.header}>User Page</Text>
       <View style={styles.contentContainer}>
-        <Text style={styles.welcome}>Welcome, {auth.currentUser.email}</Text>
+        <Text style={styles.welcome}>Welcome, {user.firstName}</Text>
         <View style={styles.userInfo}>
           <Text>Profile pic: {auth.currentUser.photoURL}</Text>
-          <Text>Name: {auth.currentUser.displayName}</Text>
         </View>
         <SignOut />
       </View>

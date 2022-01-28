@@ -5,9 +5,9 @@ const RequestCard = ({ requests, navigation }) => {
   
   return (
     <View style={styles.cardContainer}>
-      {requests.map((req) => {
+      {requests.map((req, index) => {
         return (
-          <Pressable onPress={() => navigation.navigate("RequestScreen", { req, navigation })}>
+          <Pressable key={index} onPress={() => navigation.navigate("RequestScreen", { req, navigation })}>
             <View style={styles.card}>
               <Text style={styles.cardTitle}>{`${req.title} \n \n`}</Text>
               <Text>{`${req.body}`}</Text>
