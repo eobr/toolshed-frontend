@@ -1,10 +1,13 @@
-import { StyleSheet, Text, View } from 'react-native';
-import React from 'react';
+import { StyleSheet, Text, View } from "react-native";
+import React from "react";
+
+import InboxListItem from "../../components/InboxListItem";
 
 const InboxScreen = () => {
   return (
     <View style={styles.container}>
       <Text>Inbox Screen</Text>
+      <InboxListItem />
     </View>
   );
 };

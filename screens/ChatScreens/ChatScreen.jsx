@@ -1,24 +1,35 @@
 import React, { useCallback, useLayoutEffect, useState } from "react";
 import { GiftedChat } from "react-native-gifted-chat";
 import { auth, db } from "../../firebase.js";
-// import { useUser } from "../hooks/useUser";
+import {
+  SafeAreaView,
+  View,
+  KeyboardAvoidingView,
+  StyleSheet,
+  Text, TouchableOpacity
+} from "react-native";
 import {
   addDoc,
   collection,
   orderBy,
   query,
   onSnapshot,
+  doc,
 } from "firebase/firestore";
+import { TextInput } from "react-native-gesture-handler";
 
-const ChatScreen = () => {
-  //   const currentUser = useUser();
+const ChatScreen = ({ route }) => {
   const [messages, setMessages] = useState([]);
+  const [messageInput, setMessageInput] = useState("");
+  const { group } = route.params;
 
   useLayoutEffect(() => {
-    const collectionRef = collection(db, "chats");
-    const q = query(collectionRef, orderBy("createdAt", "desc"));
+    const messagesRef = collection(db, `groups/${group}/messages`);
+    const q = query(messagesRef, orderBy("createdAt", "desc"));
+
 
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      if (querySnapshot.docs.length !== 0)
       setMessages(
         querySnapshot.docs.map((doc) => ({
           _id: doc.data()._id,
@@ -30,31 +41,79 @@ const ChatScreen = () => {
     });
 
     return unsubscribe;
-  });
+  }, []);
 
   const onSend = useCallback((messages = []) => {
-    setMessages((previousMessages) =>
-      GiftedChat.append(previousMessages, messages)
-    );
-    const { _id, createdAt, text, user } = messages[0];
-    addDoc(collection(db, "chats"), {
-      _id,
-      createdAt,
-      text,
-      user,
+    setMessages((previousMessages) => [...previousMessages, messages]);
+    // const { _id, createdAt, text, user } = messages[0];
+    console.log(group);
+
+    addDoc(collection(db, `group/${group}/messages`), {
+      messageInput: "WTF"
     });
   }, []);
 
   return (
-    <GiftedChat
-      messages={messages}
-      onSend={(messages) => onSend(messages)}
-      user={{
-        _id: auth?.currentUser?.email,
-        name: auth?.currentUser?.displayName,
-      }}
-    />
+    <KeyboardAvoidingView
+    style={styles.container}
+    >
+      <View>
+        <Text>Chat</Text>
+      </View>
+      <View>
+        <TextInput
+        style={styles.TextInput}
+        placeholder="Enter Your Chat"
+        value={messageInput}
+        onChangeText={setMessageInput}
+        />
+      </View>
+      <View>
+        <TouchableOpacity
+        style={styles.buttonContainer}
+        onPress={onSend}
+        >
+          <Text
+          style={styles.buttonText}
+          >Send Message</Text>
+        </TouchableOpacity>
+      </View>
+    </KeyboardAvoidingView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F36433",
+  },
+  textBox: {
+    backgroundColor: "white",
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 10,
+    marginTop: 5,
+  },
+  buttonContainer: {
+    width: "60%",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 40,
+  },
+  button: {
+    backgroundColor: "#0782f9",
+    width: "100%",
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "white",
+    fontWeight: "700",
+    fontSize: 16,
+  }
+});
 
 export default ChatScreen;
