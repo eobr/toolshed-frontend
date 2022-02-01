@@ -7,6 +7,8 @@ import {
   Pressable,
   TouchableOpacity,
   Picker,
+  Modal,
+  SafeAreaView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -30,7 +32,13 @@ import ItemCard from "../../components/ToolshedComponents/ItemCard";
 import ActionButton from "react-native-action-button";
 import * as Progress from "react-native-progress";
 import AppLoading from "expo-app-loading";
-import { Oxygen_400Regular, Oxygen_700Bold, useFonts } from "@expo-google-fonts/oxygen";
+import {
+  Oxygen_400Regular,
+  Oxygen_700Bold,
+  useFonts,
+} from "@expo-google-fonts/oxygen";
+
+import ModalPicker from "../../components/ModalPicker";
 
 const ToolshedScreen = ({ navigation }) => {
   const [items, setItems] = useState([]);
@@ -40,6 +48,7 @@ const ToolshedScreen = ({ navigation }) => {
   const [selectedDistance, setSelectedDistance] = useState(15);
   const [searchQuery, setSearchQuery] = useState("");
   const [search, setSearch] = useState("");
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const categories = [
     "All",
@@ -109,12 +118,21 @@ const ToolshedScreen = ({ navigation }) => {
   }, [newItem, selectedCategory, searchQuery, selectedDistance]);
 
   let [fontsLoaded] = useFonts({
-    Oxygen_400Regular, Oxygen_700Bold,
+    Oxygen_400Regular,
+    Oxygen_700Bold,
   });
 
   if (!fontsLoaded) {
     return <AppLoading />;
   }
+
+  const changeModalVisibility = (bool) => {
+    setIsModalVisible(bool);
+  };
+
+  const setData = (option) => {
+    setSelectedCategory(option);
+  };
 
   return (
     <View style={styles.container}>
@@ -122,13 +140,37 @@ const ToolshedScreen = ({ navigation }) => {
         <Text style={styles.header}>Toolshed</Text>
       </View>
       <View style={styles.contentContainer}>
-        <ToolSearch
+        {/* <ToolSearch
           style={styles.bar}
           setSearchQuery={setSearchQuery}
           search={search}
           setSearch={setSearch}
-        />
-        <Picker
+        /> */}
+        <SafeAreaView style={styles.modalContainer}>
+          <TouchableOpacity
+            style={styles.modalPicker}
+            onPress={() => {
+              changeModalVisibility(true);
+            }}
+          >
+            <Text style={styles.modalText}>{selectedCategory}</Text>
+          </TouchableOpacity>
+          <Modal
+            transparent={true}
+            animationType="slide"
+            visible={isModalVisible}
+            onRequestClose={() => {
+              changeModalVisibility(false);
+              alert("modal has been closed");
+            }}
+          >
+            <ModalPicker
+              changeModalVisibility={changeModalVisibility}
+              setData={setData}
+            />
+          </Modal>
+        </SafeAreaView>
+        {/* <Picker
           selectedValue={selectedCategory}
           onValueChange={(itemValue) => setSelectedCategory(itemValue)}
         >
@@ -157,6 +199,7 @@ const ToolshedScreen = ({ navigation }) => {
             );
           })}
         </Picker>
+
         <Text style={{ fontWeight: "bold", textAlign: "center" }}>
           {searchQuery || "All items"}{" "}
           {selectedCategory !== "All"
@@ -166,8 +209,8 @@ const ToolshedScreen = ({ navigation }) => {
         </Text>
         <Pressable onPress={resetFilter}>
           <Text>Clear filters</Text>
-        </Pressable>
-        <ScrollView>
+        </Pressable> */}
+        {/* <ScrollView>
           <View style={styles.cardContainer}>
             {items.map((item) => {
               return (
@@ -183,7 +226,7 @@ const ToolshedScreen = ({ navigation }) => {
               );
             })}
           </View>
-        </ScrollView>
+        </ScrollView> */}
       </View>
       <ActionButton buttonColor="#F36433">
         <ActionButton.Item onPress={handlePress} title={"Post a Tool"}>
@@ -197,6 +240,22 @@ const ToolshedScreen = ({ navigation }) => {
 export default ToolshedScreen;
 
 const styles = StyleSheet.create({
+  modalContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+  },
+  modalText: {
+    marginVertical: 20,
+    fontSize: 25,
+  },
+  modalPicker: {
+    backgroundColor: "orange",
+    alignSelf: "stretch",
+    paddingHorizontal: 20,
+  },
+
   container: {
     flex: 1,
     justifyContent: "center",
