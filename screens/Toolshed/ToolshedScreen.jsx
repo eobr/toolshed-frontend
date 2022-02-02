@@ -30,7 +30,11 @@ import ItemCard from "../../components/ToolshedComponents/ItemCard";
 import ActionButton from "react-native-action-button";
 import * as Progress from "react-native-progress";
 import AppLoading from "expo-app-loading";
-import { Oxygen_400Regular, Oxygen_700Bold, useFonts } from "@expo-google-fonts/oxygen";
+import {
+  Oxygen_400Regular,
+  Oxygen_700Bold,
+  useFonts,
+} from "@expo-google-fonts/oxygen";
 
 const ToolshedScreen = ({ navigation }) => {
   const [items, setItems] = useState([]);
@@ -40,6 +44,7 @@ const ToolshedScreen = ({ navigation }) => {
   const [selectedDistance, setSelectedDistance] = useState(15);
   const [searchQuery, setSearchQuery] = useState("");
   const [search, setSearch] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const categories = [
     "All",
@@ -67,7 +72,7 @@ const ToolshedScreen = ({ navigation }) => {
 
   useEffect(() => {
     (async () => {
-      // setIsLoading(true);
+      setIsLoading(true);
       try {
         const itemList =
           selectedCategory === "All"
@@ -101,15 +106,18 @@ const ToolshedScreen = ({ navigation }) => {
               return itemCased.match(regex);
             });
         setItems(filteredItems);
+        setIsLoading(false);
       } catch (err) {
         alert(err);
         console.log(err);
+        setIsLoading(false);
       }
     })();
   }, [newItem, selectedCategory, searchQuery, selectedDistance]);
 
   let [fontsLoaded] = useFonts({
-    Oxygen_400Regular, Oxygen_700Bold,
+    Oxygen_400Regular,
+    Oxygen_700Bold,
   });
 
   if (!fontsLoaded) {
@@ -168,21 +176,30 @@ const ToolshedScreen = ({ navigation }) => {
           <Text>Clear filters</Text>
         </Pressable>
         <ScrollView>
-          <View style={styles.cardContainer}>
-            {items.map((item) => {
-              return (
-                <TouchableOpacity
-                  onPress={() => {
-                    navigation.navigate("ItemScreen", { item });
-                  }}
-                  item={item}
-                  key={item.uid}
-                >
-                  <ItemCard item={item} />
-                </TouchableOpacity>
-              );
-            })}
-          </View>
+          {isLoading ? (
+            <Progress.Circle
+              size={50}
+              indeterminate={true}
+              style={styles.spinner}
+              color={"#F36433"}
+            />
+          ) : (
+            <View style={styles.cardContainer}>
+              {items.map((item) => {
+                return (
+                  <TouchableOpacity
+                    onPress={() => {
+                      navigation.navigate("ItemScreen", { item });
+                    }}
+                    item={item}
+                    key={item.uid}
+                  >
+                    <ItemCard item={item} />
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          )}
         </ScrollView>
       </View>
       <ActionButton buttonColor="#F36433">
@@ -255,4 +272,8 @@ const styles = StyleSheet.create({
   progressPie: {
     alignSelf: "center",
   },
+  spinner: {
+    marginTop: "4%",
+    alignSelf: "center",
+  }
 });
