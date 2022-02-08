@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "toolshed-frontend",
-    "slug": "toolshed-frontend",
+    "name": "toolshed",
+    "slug": "toolshed",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
